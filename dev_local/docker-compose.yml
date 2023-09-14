@@ -1,0 +1,23 @@
+version: '3'
+services:
+  tc_backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        USER_ID: ${USER_ID:-1000}
+        USER_NAME: ${USER_NAME:-tc_backend}
+    container_name: tc_backend
+    hostname: tc_backend
+    volumes:
+      - ../:/var/www/app
+    working_dir: /var/www/app
+    command: "bash"
+    tty: true
+    ports:
+      - "80:80"
+
+networks:
+  default:
+    external:
+      name: own_net

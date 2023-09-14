@@ -1,0 +1,1 @@
+docker stop 'prod_tc_backend' && docker rm 'prod_tc_backend'
