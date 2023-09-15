@@ -1,0 +1,20 @@
+version: "2"
+sql:
+- schema: "sqlc/schema.sql"
+  queries: "sqlc/query.sql"
+  engine: "sqlc"
+  gen:
+    go: 
+      package: "authors"
+      out: "sqlc"
+  database:
+    uri: "sqlc://postgres:postgres@localhost:5432/postgres"
+  rules:
+    - sqlc/db-prepare
+- schema: "mysql/schema.sql"
+  queries: "mysql/query.sql"
+  engine: "mysql"
+  gen:
+    go:
+      package: "authors"
+      out: "mysql"
