@@ -14,7 +14,7 @@ services:
     command: "bash"
     tty: true
     ports:
-      - "80:80"
+      - "3000:80"
     environment:
       GO111MODULE: "on"
       GOSUMDB: "off"

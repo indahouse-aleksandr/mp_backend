@@ -1,0 +1,11 @@
+{
+    "web":{
+        "client_id":"864561545673-6rge5d5aafv9f19phevaof999edj8hrr.apps.googleusercontent.com",
+        "project_id":"exampleproject-366115",
+        "auth_uri":"https://accounts.google.com/o/oauth2/auth",
+        "token_uri":"https://oauth2.googleapis.com/token",
+        "auth_provider_x509_cert_url":"https://www.googleapis.com/oauth2/v1/certs",
+        "client_secret":"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",
+        "redirect_uris":["https://good-services-for-good-people.onrender.com/auth"]
+        }
+}
