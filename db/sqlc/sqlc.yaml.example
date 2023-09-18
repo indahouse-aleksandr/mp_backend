@@ -1,20 +1,25 @@
 version: "2"
 sql:
-- schema: "sqlc/schema.sql"
-  queries: "sqlc/query.sql"
-  engine: "sqlc"
+- schema: "path_to_file_schema.sql"
+  queries: "path_to_directory_or_file_queries.sql"
+  engine: "postgres"
   gen:
     go: 
-      package: "authors"
-      out: "sqlc"
+      package: "golang_package_name"
+      out: "path_to_directory"
+      emit_json_tags: true
   database:
-    uri: "sqlc://postgres:postgres@localhost:5432/postgres"
-  rules:
-    - sqlc/db-prepare
-- schema: "mysql/schema.sql"
-  queries: "mysql/query.sql"
-  engine: "mysql"
-  gen:
-    go:
-      package: "authors"
-      out: "mysql"
+    uri: "postgresql://USER:PASSWORD@HOST:PORT/DATABASE"
+
+version: "2"
+sql:
+  - schema: "./schema.sql"
+    queries: "./query"
+    engine: "postgres"
+    gen:
+      go:
+        package: "queries"
+        out: "../queries"
+        emit_json_tags: true
+    database:
+      uri: "postgresql://postgres:postgres@tc_postgres:5432/store"

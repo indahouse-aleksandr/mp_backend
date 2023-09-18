@@ -19,7 +19,6 @@ id -u
 Створіть файл **dev_local/.env** за приклад потрібно взяти файл **dev_local/.env.example**
 
 ```bash
-USER_NAME="local user name"
 USER_ID="local user id"
 ```
 
@@ -61,7 +60,7 @@ docker-compose ps
 Якщо контейнери запущені тоді потрібно зайти в середину виконавши таку команду:
 
 ```bash
-docker exec -it tc_frontend bash
+docker exec -it tc_backend bash
 ```
 
 Перебуваючи в середині контейнера запустіть застосунок.
@@ -71,6 +70,37 @@ go run main.go
 ```
 
 В випадку успішного запуску ви зможете мати доступ до застосунку через ваш браузре за адресою http://localhost:10000
+
+## Встановлення інструментів для бази данних
+
+Перебуваючи в контейнері встановлюємо **sqlc**
+
+```bash
+go install github.com/sqlc-dev/sqlc/cmd/sqlc@v1.21.0
+```
+
+Після встановлення копіюємо виконуваний файл в директорію db
+
+```bash
+cp /go/bin/sqlc /var/www/app/db/sqlc/
+```
+
+В директорії **db/sqlc/** потрібно створити два нових файли взявши за приклад файли зі словом **example** в назві. Поля в файлах заповнити актуальною інформацією для вашого локального оточення.
+
+- db/sqlc/sqlc.yaml як приклад взяти db/sqlc/sqlc.yaml.example
+- db/sqlc/schema.sql як приклад взяти db/sqlc/schema.sql.example
+
+Перебуваючи в контейрені встановлюємо **migrate**
+
+```bash
+go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@v4.16.2
+```
+
+Після встановлення копіюємо виконуваний файл в директорію db
+
+```bash
+cp /go/bin/migrate /var/www/app/db/migrate/
+```
 
 ## Структура директорій
 

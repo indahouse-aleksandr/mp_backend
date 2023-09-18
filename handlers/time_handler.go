@@ -1,4 +1,4 @@
-package handler
+package handlers
 
 import (
 	"fmt"
@@ -7,7 +7,6 @@ import (
 )
 
 func TimeNow(w http.ResponseWriter, r *http.Request) {
-	EnableCors(&w)
 	t := time.Now()
 	fmt.Fprintf(w, "TIME: , %s!", t)
 }

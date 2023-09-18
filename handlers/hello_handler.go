@@ -1,4 +1,4 @@
-package handler
+package handlers
 
 import (
 	"fmt"
@@ -6,6 +6,5 @@ import (
 )
 
 func HelloServer(w http.ResponseWriter, r *http.Request) {
-	EnableCors(&w)
 	fmt.Fprintf(w, "Hello, %s!", r.URL.Path[1:])
 }

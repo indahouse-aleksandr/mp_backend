@@ -1,4 +1,4 @@
-package handler
+package handlers
 
 import (
 	"fmt"
@@ -7,7 +7,6 @@ import (
 )
 
 func TmpHandler(w http.ResponseWriter, r *http.Request) {
-	EnableCors(&w)
 	srv := service.NewTmpService()
 	answer := srv.GetAnswer(r.Context())
 
