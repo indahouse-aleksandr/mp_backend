@@ -5,7 +5,7 @@ services:
       context: ./go
       dockerfile: Dockerfile
       args:
-        USER_ID: ${USER_ID:-1000}
+        USER_ID: ${USER_ID}
     container_name: mp_backend
     hostname: mp_backend
     working_dir: /var/www/app
@@ -14,7 +14,7 @@ services:
     command: "bash"
     tty: true
     ports:
-      - "3000:80"
+      - "10000:80"
     environment:
       GO111MODULE: "on"
       GOSUMDB: "off"
