@@ -1,13 +1,13 @@
 version: '3'
 services:
-  tc_backend:
+  mp_backend:
     build:
       context: ./go
       dockerfile: Dockerfile
       args:
         USER_ID: ${USER_ID:-1000}
-    container_name: tc_backend
-    hostname: tc_backend
+    container_name: mp_backend
+    hostname: mp_backend
     working_dir: /var/www/app
     volumes:
       - ../:/var/www/app
@@ -19,28 +19,45 @@ services:
       GO111MODULE: "on"
       GOSUMDB: "off"
       DATABASE_URL: ${DATABASE_URL}
-  tc_postgres:
+  mp_postgres:
     build:
       context: ./postgres
       dockerfile: Dockerfile
-    container_name: tc_postgres
-    hostname: tc_postgres
+    container_name: mp_postgres
+    hostname: mp_postgres
     ports:
-      - '5488:5432'
+      - '5433:5432'
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       PGDATA: /pgdata
     volumes:
-      - tc_postgres_pg_data:/pgdata
-      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql      
+      - mp_postgres_pg_data:/pgdata
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+  mp_pgbouncer:
+    build:
+      context: ./pgbouncer
+      dockerfile: Dockerfile
+      args:
+        USER_ID: ${USER_ID:-1000}
+    container_name: mp_pgbouncer
+    hostname: mp_pgbouncer
+    ports:
+      - '6433:6432'
+    environment:
+      POSTGRESQL_DATABASE: postgres
+      POSTGRESQL_HOST: mp_postgres
+      POSTGRESQL_PASSWORD: postgres
+    volumes:
+      - ./pgbouncer/pgbouncer.ini:/etc/pgbouncer/pgbouncer.ini
+      - ./pgbouncer/userlist.txt:/etc/pgbouncer/userlist.txt
 
 networks:
   default:
     external:
-      name: tc_network
+      name: mp_network
 
 volumes:
-  tc_postgres_pg_data:
+  mp_postgres_pg_data:
     external:
-      name: tc_postgres_pg_data
+      name: mp_postgres_pg_data

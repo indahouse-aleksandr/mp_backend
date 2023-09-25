@@ -1,11 +1,4 @@
 .env
 dev_local/.env
-.cache
 vendor
-db/migrate/migrate
-
-db/sqlc/query.sql
-db/sqlc/schema.sql
-db/sqlc/sqlc
-db/sqlc/sqlc.yaml
-
+/bin
