@@ -1,1 +1,1 @@
-docker stop 'prod_tc_backend' && docker rm 'prod_tc_backend'
+docker stop 'prod_mp_backend' && docker rm 'prod_mp_backend'

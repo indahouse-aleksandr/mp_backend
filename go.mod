@@ -1,4 +1,4 @@
-module github.com/indahouse-aleksandr/tc_backend
+module github.com/indahouse-aleksandr/mp_backend
 
 go 1.21
 

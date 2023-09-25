@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/indahouse-aleksandr/tc_backend/routers"
+	"github.com/indahouse-aleksandr/mp_backend/routers"
 )
 
 func main() {
