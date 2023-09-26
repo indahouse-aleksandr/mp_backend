@@ -70,7 +70,7 @@ docker-compose ps
 docker exec -it mp_backend bash
 ```
 
-Перебуваючи в середині контейнера запустіть застосунок.
+Перебуваючи в середині контейнера для запуску застосунку виконайте в терміналі:
 
 ```bash
 go run main.go
@@ -78,10 +78,12 @@ go run main.go
 
 В випадку успішного запуску ви зможете мати доступ до застосунку через ваш браузре за адресою http://localhost:10000
 
+Але спочатку, якщо це перший запуск потрібно виконати міграції для бази данних.
+
 ## Встановлення інструментів для бази данних
 
-
 ### Міграції для бази данних
+
 Перебуваючи в контейрені встановлюємо **migrate**
 
 ```bash
@@ -92,6 +94,32 @@ go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@v4.
 
 ```bash
 cp /go/bin/migrate /var/www/app/bin/
+```
+
+Для запуску створення нової міграції виконайте наведену нижче команду.
+Ім'я new потрібно замінити на своє.
+
+```bash
+./bin/migrate create -ext="sql" -dir="../migrations" -seq -digits="5" new
+```
+
+Для запуску уже існуючих міграцій, спочатку перейти в диреторію /bin а потім виконати команду:
+
+```bash
+./migrate -path="../migrations" -database="postgresql://postgres:postgres@mp_postgres:5432/store" -verbose up
+```
+
+Для відміни раніше виконаних міграцій, спочатку перейти в диреторію /bin а потім виконати команду:
+
+```bash
+./migrate -path="../migrations" -database="postgresql://postgres:postgres@mp_postgres:5432/store" -verbose down
+```
+
+Якщо потрібно виконати або відмінити лише одну міграцію то ставимо 1 в кінці команди, після up або down
+
+```bash
+./migrate ... up 1
+./migrate ... down 1
 ```
 
 ### Генератор коду для запитів в бд sqlc
@@ -108,10 +136,19 @@ go install github.com/sqlc-dev/sqlc/cmd/sqlc@v1.21.0
 cp /go/bin/sqlc /var/www/app/bin/
 ```
 
-В директорії **/bin** потрібно створити два нових файли взявши за приклад файли зі словом **example** в назві. Поля в файлах заповнити актуальною інформацією для вашого локального оточення.
+В файлі **dev_local/sqlc/schema.sql** лежить існуюча схема бази данних.
+Без цієї схеми робота sqlc не можлива або буде не правильною.
+Якщо цей файл порожній то потрібно наповнити його актуальною схемою існуючої бази данних.
 
-- **./bin/sqlc.yaml** як приклад взяти dev_local/sqlc/sqlc.yaml.example
-- **./bin/schema.sql** як приклад взяти dev_local/sqlc/schema.sql.example
+Для генерації коду **sqlc** потрібно помістити файли з розширенням sql в директорію **queries**. На основі цихфайлів буде сгенеровано golang код в цій же директорії.
+
+Для запуску генерації коду запустіть в терміналі команду:
+
+```bash
+./sqlc --file "../dev_local/sqlc/sqlc.yaml" generate
+```
+
+Мають з'явитися нові файли в директорії **queries**
 
 ## Структура директорій
 
@@ -162,43 +199,48 @@ go mod vendor
 ## Gin
 
 Категорії методів:
+
 - прочитати інформацію від клієнта
 - провалідувати інформацію від клієнта
 - повернути інформацію клієнту
 
+  // Authorized group (uses gin.BasicAuth() middleware)
+  // Same than:
+  // authorized := r.Group("/")
+  // authorized.Use(gin.BasicAuth(gin.Credentials{
+  // "foo": "bar",
+  // "manu": "123",
+  //}))
+  authorized := engine.Group("/", gin.BasicAuth(gin.Accounts{
+  "foo": "bar", // user:foo password:bar
+  "manu": "123", // user:manu password:123
+  }))
 
+  /\* example curl for /admin with basicauth header
+  Zm9vOmJhcg== is base64("foo:bar")
 
-	// Authorized group (uses gin.BasicAuth() middleware)
-	// Same than:
-	// authorized := r.Group("/")
-	// authorized.Use(gin.BasicAuth(gin.Credentials{
-	//	  "foo":  "bar",
-	//	  "manu": "123",
-	//}))
-	authorized := engine.Group("/", gin.BasicAuth(gin.Accounts{
-		"foo":  "bar", // user:foo password:bar
-		"manu": "123", // user:manu password:123
-	}))
+      curl -X POST \
 
-	/* example curl for /admin with basicauth header
-	   Zm9vOmJhcg== is base64("foo:bar")
+  http://localhost:8080/admin \
+   -H 'authorization: Basic Zm9vOmJhcg==' \
+   -H 'content-type: application/json' \
+   -d '{"value":"bar"}'
+  */
+  authorized.POST("admin", func(c *gin.Context) {
+  //user := c.MustGet(gin.AuthUserKey).(string)
 
-		curl -X POST \
-	  	http://localhost:8080/admin \
-	  	-H 'authorization: Basic Zm9vOmJhcg==' \
-	  	-H 'content-type: application/json' \
-	  	-d '{"value":"bar"}'
-	*/
-	authorized.POST("admin", func(c *gin.Context) {
-		//user := c.MustGet(gin.AuthUserKey).(string)
+      // Parse JSON
+      var json struct {
+      	Value string `json:"value" binding:"required"`
+      }
 
-		// Parse JSON
-		var json struct {
-			Value string `json:"value" binding:"required"`
-		}
+      if c.Bind(&json) == nil {
+      	//db[user] = json.Value
+      	c.JSON(http.StatusOK, gin.H{"status": "ok"})
+      }
 
-		if c.Bind(&json) == nil {
-			//db[user] = json.Value
-			c.JSON(http.StatusOK, gin.H{"status": "ok"})
-		}
-	})
+  })
+
+  // https://blog.logrocket.com/gin-binding-in-go-a-tutorial-with-examples/
+  // https://gosamples.dev/check-error-type/
+  // https://gist.github.com/subfuzion/08c5d85437d5d4f00e58

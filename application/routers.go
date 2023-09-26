@@ -1,4 +1,4 @@
-package routers
+package application
 
 import (
 	"github.com/gin-gonic/gin"
@@ -7,8 +7,7 @@ import (
 
 func SetupRouter(engine *gin.Engine) *gin.Engine {
 
-	engine.GET("/ping", controllers.Ping)
-	engine.GET("/user/:name", controllers.UserName)
+	engine.POST("/user", controllers.CreateUser)
 
 	return engine
 }

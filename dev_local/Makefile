@@ -11,11 +11,24 @@ go-vendor:
 	go mod vendor
 
 migrate-create:
+	../bin/migrate create -ext="sql" -dir="../migrations" -seq -digits="5" new
+
+migrate-up-all:
+	../bin/migrate -path="../migrations" -database="postgresql://postgres:postgres@mp_postgres:5432/store?sslmode=disable" -verbose up
+
+migrate-down-all:
+	../bin/migrate -path="../migrations" -database="postgresql://postgres:postgres@mp_postgres:5432/store?sslmode=disable" -verbose down
+
+sqlc-generate:
+	../bin/sqlc --file "../dev_local/sqlc/sqlc.yaml" generate
+
 
 help: Makefile
 	@echo "Choose a command:"
 	@echo " migrate-install"
-	@echo " migrate-create"	
+	@echo " migrate-create"
+	@echo " migrate-up-all"
 	@echo " qlc-install"
 	@echo " go-vendor" 
-
+	@echo " migrate-down-all" 
+	@echo " sqlc-generate" 
