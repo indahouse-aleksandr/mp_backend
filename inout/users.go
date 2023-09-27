@@ -15,6 +15,10 @@ type InputCreateUser struct {
 	Password string `json:"password" binding:"required"`
 }
 
+type InputGetUserById struct {
+	Id int `json:"id" uri:"id" binding:"required,mycustom"`
+}
+
 type OutUser struct {
 	ID        int64     `json:"id"`
 	Name      string    `json:"name"`
@@ -39,7 +43,7 @@ type OutCreateUserOk struct {
 func ErrMsgUser(err error) OutCreateUserErr {
 
 	var target *errs.ErrorUserEmaiExist
-	if errors.As(err, &target) {
+	if errors.Is(err, target); errors.As(err, &target) {
 		return OutCreateUserErr{
 			IsError: true,
 			Errors: []OutValidatorsErr{{

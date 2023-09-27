@@ -9,6 +9,18 @@ import (
 	"github.com/indahouse-aleksandr/mp_backend/services"
 )
 
+func GetUserByID(c *gin.Context) {
+
+	var inputModel inout.InputGetUserById
+	if err := c.BindUri(&inputModel); err != nil {
+		c.JSON(http.StatusBadRequest, inout.ErrMsgValidator(err))
+		return
+	}
+
+	c.JSON(http.StatusAccepted, &inputModel)
+	return
+}
+
 func CreateUser(c *gin.Context) {
 
 	var inputModel inout.InputCreateUser

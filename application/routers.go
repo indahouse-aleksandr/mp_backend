@@ -7,6 +7,7 @@ import (
 
 func SetupRouter(engine *gin.Engine) *gin.Engine {
 
+	engine.GET("/user/:id", controllers.GetUserByID)
 	engine.POST("/user", controllers.CreateUser)
 
 	return engine

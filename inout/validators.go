@@ -2,6 +2,7 @@ package inout
 
 import (
 	"errors"
+	"reflect"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/indahouse-aleksandr/mp_backend/validators"
@@ -23,18 +24,26 @@ var ErrMsgByTag map[string]func(fe validator.FieldError) string = map[string]fun
 }
 
 func ErrMsgValidator(err error) []OutValidatorsErr {
+	var out []OutValidatorsErr
 	var arrFieldError validator.ValidationErrors
-	if !errors.As(err, &arrFieldError) {
-		return []OutValidatorsErr{}
+
+	if !errors.Is(err, arrFieldError) {
+		out = append(out, OutValidatorsErr{
+			Field:   reflect.TypeOf(err).String(),
+			Message: err.Error(),
+		})
+		return out
 	}
 
-	out := make([]OutValidatorsErr, len(arrFieldError))
-
-	for index, fieldError := range arrFieldError {
-		out[index] = OutValidatorsErr{
-			Field:   fieldError.Field(),
-			Message: getErrorMsg(fieldError),
+	if errors.Is(err, arrFieldError); errors.As(err, &arrFieldError) {
+		out := make([]OutValidatorsErr, len(arrFieldError))
+		for index, fieldError := range arrFieldError {
+			out[index] = OutValidatorsErr{
+				Field:   fieldError.Field(),
+				Message: getErrorMsg(fieldError),
+			}
 		}
+		return out
 	}
 
 	return out
